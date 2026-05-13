@@ -1,15 +1,61 @@
+traffic_shaping:
+  router:
+    timeout: 1s
+    global_rate_limit:
+      capacity: 800
+      interval: 1s
+  all:
+    timeout: 1500ms
+  subgraphs:
+    accounts:
+      timeout: 300ms
+      global_rate_limit:
+        capacity: 800
+        interval: 1s
+      deduplicate_query: true
+    products:
+      deduplicate_query: true
+    reviews:
+      deduplicate_query: true
+    inventory:
+      deduplicate_query: true
+
 supergraph:
   introspection: true
   listen: 0.0.0.0:4000
   query_planning:
     cache:
       in_memory:
-        limit: 10
+        limit: 512 # This is the default value.
+    # Pre-plan the 100 most used operations when the supergraph changes
+    warmed_up_queries: 100
+
+preview_entity_cache:
+  enabled: true
+  subgraph:
+    all:
+      enabled: false
+      redis:
+        urls: ["redis://redis:6379"]
+        timeout: 15ms # Optional, by default: 2ms
+        ttl: 10s # Optional, by default no expiration
+  subgraphs:
+    products:
+      enabled: true
+    inventory:
+      enabled: true
+    reviews:
+      enabled: true
+    accounts:
+      enabled: true
 
 sandbox:
   enabled: true
 homepage:
   enabled: false
+
+cors:
+  allow_any_origin: true
 
 
 include_subgraph_errors:

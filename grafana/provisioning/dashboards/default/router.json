@@ -2510,7 +2510,7 @@
           "links": [
             {
               "title": "link",
-              "url": "/d/adw06lw71a41sd/router-dashboard?orgId=1&editPanel=2&var-traceId=${__data.fields[\"traceID\"]}"
+              "url": "/d/router/router-dashboard?orgId=1&editPanel=2&var-traceId=${__data.fields[\"traceID\"]}"
             }
           ],
           "mappings": [],

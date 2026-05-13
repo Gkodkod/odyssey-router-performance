@@ -88,6 +88,7 @@ async function startApolloServer(typeDefs, resolvers) {
         resolvers,
       },
     ]),
+    introspection: process.env.NODE_ENV !== 'production',
     allowBatchedHttpRequests: true,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });

@@ -1,7 +1,7 @@
 name: performance-workshop
 services:
   router-init:
-    image: &routerImage ghcr.io/apollographql/router:v1.55.0
+    image: alpine:latest
     user: root
     entrypoint:
       - 'chown'
@@ -12,8 +12,8 @@ services:
   router:
     image: ghcr.io/apollographql/router:v1.55.0
     environment:
-      - APOLLO_KEY=add-your-apollo-key-here
-      - APOLLO_GRAPH_REF=add-your-graph-ref-here
+      - APOLLO_KEY=${APOLLO_KEY}
+      - APOLLO_GRAPH_REF=${APOLLO_GRAPH_REF}
     entrypoint:
       - '/etc/router/.router/bootstrap.sh'
     ports:
@@ -112,16 +112,17 @@ services:
   # Tempo runs as user 10001, and docker compose creates the volume as root.
   # As such, we need to chown the volume in order for Tempo to start correctly.
   init-tempo:
-    image: &tempoImage grafana/tempo:latest
+    image: grafana/tempo:2.6.1
     user: root
     entrypoint:
       - 'chown'
+      - '-R'
       - '10001:10001'
       - '/var/tempo'
     volumes:
       - tempo-data:/var/tempo
   tempo:
-    image: *tempoImage
+    image: grafana/tempo:2.6.1
     command: ['-config.file=/etc/tempo/tempo.yaml']
     # ports:
     #   - 3200:3200
@@ -132,7 +133,7 @@ services:
       - init-tempo
     restart: always
   init-loki:
-    image: &lokiImage grafana/loki:latest
+    image: alpine:latest
     user: root
     entrypoint:
       - '/etc/loki/loki.sh'
@@ -140,7 +141,7 @@ services:
       - ${PWD}/loki:/etc/loki
       - loki-data:/tmp/loki:rw
   loki:
-    image: *lokiImage
+    image: grafana/loki:2.9.1
     ports:
       - 3100:3100
     command:
@@ -168,7 +169,7 @@ services:
       - router
     volumes:
       - ${PWD}/vegeta:/etc/vegeta
-    command: attack -targets=/etc/vegeta/targets.http -rate=500 -timeout 10s -duration=0 -output=/dev/null
+    command: attack -targets=/etc/vegeta/targets.http -rate=800 -timeout 10s -duration=0 -output=/dev/null
     # restart: always
 
 volumes:
