@@ -1,63 +1,30 @@
 # ROADMAP.md
 
-> **Current Phase**: Phase 4 — Load Testing & Measurement
-> **Milestone**: v1.0 — Complete Performance Workshop Scaffold
+> **Current Milestone**: Docker Lock Optimization & Panel Colors Change
+> **Goal**: Resolve Windows/Docker/WSL2 file locking conflicts across the repo and improve the processing panel semantic colors.
 
-## Must-Haves (from SPEC)
+## Must-Haves
+- [ ] Comprehensive research document on fixing Windows/Docker/WSL2 file locking conflicts.
+- [ ] Discussion and finalized decisions on optimal processing panel colors (e.g., p99 should not be green).
 
-- [x] All Docker services start cleanly with `docker compose up -d`
-- [x] Database auto-seeds on first boot
-- [x] Grafana shows live Router metrics, traces, and logs
-- [x] Redis entity cache measurably reduces subgraph calls
-- [x] Rate limiter correctly returns 429s under load
-- [ ] DataLoader batching visible in `reviews` subgraph logs
-- [x] All subgraphs compose cleanly via `supergraph.graphql`
-
----
+## Nice-to-Haves
+- [ ] Implementation of the chosen file locking fix across the repository.
+- [ ] Implementation of the new panel colors in the processing panel.
 
 ## Phases
 
-### Phase 1: Infrastructure Validation
-**Status**: ✅ Complete
-**Objective**: Verify all Docker Compose services start correctly, dependencies resolve in order, database seeds successfully, and all subgraphs are reachable from the Router.
-**Requirements**: Docker, docker-compose.yaml correctness, seed.js, subgraph health
-**Completed**: 2026-05-14
+### Phase 1: WSL/Docker File Locking Optimization Research
+**Status**: ⬜ Not Started
+**Objective**: Analyze the current Docker + WSL2 + VS Code setup, review web search findings on file locking conflicts, and recommend the best architectural solution for this project in a new document.
 
----
+### Phase 2: Panel Color Design & Discussion
+**Status**: ⬜ Not Started
+**Objective**: Review the current processing panel metric colors, discuss alternatives for proper semantic coloring (e.g., why p99 shouldn't be green), and finalize a color palette.
 
-### Phase 2: Router Performance Configuration
-**Status**: ✅ Complete
-**Objective**: Configure and validate all Router-level performance features in `router.yaml`: rate limiting, timeouts, query deduplication, query plan caching + warm-up, and Redis entity caching.
-**Requirements**: SPEC — Goals 1, Performance Features table
-**Completed**: 2026-05-14
+### Phase 3: Docker Fix Implementation (Nice-to-have)
+**Status**: ⬜ Not Started
+**Objective**: Execute the recommendations from Phase 1 to implement the optimal Docker/WSL2 file locking solution.
 
----
-
-### Phase 3: Observability Stack Validation
-**Status**: ✅ Complete
-**Objective**: Confirm Prometheus scrapes Router metrics, Tempo receives OTLP traces, Loki aggregates logs, and Grafana displays all three data sources with the pre-configured dashboard.
-**Requirements**: SPEC — Goal 3
-**Completed**: 2026-05-14
-
----
-
-### Phase 4: Load Testing & Measurement
-**Status**: ✅ Done
-**Objective**: Run Vegeta load tests to generate measurable traffic, validate rate-limit behavior, confirm cache hit/miss ratios in Grafana, and demonstrate DataLoader batching in `reviews` logs.
-**Requirements**: SPEC — Goals 4 + Success Criteria
-
----
-
-### Phase 5: DataLoader Consistency & Technical Debt
-**Status**: ✅ Complete
-**Objective**: Address known technical debt: extend DataLoader batching to other subgraphs where needed, fix the hardcoded `me()` query in `accounts`, and add a multi-user query to Vegeta config to fully exercise batch loading.
-**Requirements**: SPEC — Technical Debt items from ARCHITECTURE.md
-**Completed**: 2026-05-14
-
----
-
-### Phase 6: Advanced Stress Testing
-**Status**: ✅ Complete
-**Objective**: Introduce deeply nested queries, heavy computation queries (with `@requires`), and cross-subgraph mutations to thoroughly stress-test the router's query planner, cache limits, and DataLoader configurations.
-**Requirements**: SPEC — Goal 4 (Load Testing & Measurement)
-
+### Phase 4: Panel Color Implementation (Nice-to-have)
+**Status**: ⬜ Not Started
+**Objective**: Apply the finalized color changes to the processing panel codebase.
