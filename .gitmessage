@@ -1,0 +1,11 @@
+<type>(<scope>): <short description>
+
+**Files changed:**
+- `path/to/file1`
+- `path/to/file2`
+
+**Details:**
+- What was done
+- Why it was done
+
+# Optional: Issue reference

@@ -3,3 +3,10 @@
 /router/.router/schema.json
 .env
 .env.local
+/node_modules
+.gitignore
+package-lock.json*
+.agent/
+.agents/
+adapters/
+docs/

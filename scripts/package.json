@@ -1,0 +1,12 @@
+{
+  "name": "starstuff-seeder",
+  "version": "1.0.0",
+  "description": "Seed script for the Starstuff Services PostgreSQL database",
+  "scripts": {
+    "start": "node seed.js"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "pg": "^8.12.0"
+  }
+}

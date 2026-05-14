@@ -1,5 +1,36 @@
 name: performance-workshop
 services:
+  # ── PostgreSQL ────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: starstuff
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ${PWD}/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d starstuff"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  # ── Seeder (runs once automatically on first startup) ──────────────────────
+  seeder:
+    build: ./scripts
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/starstuff
+      SEED_USERS: "10000"
+      SEED_PRODUCTS: "5000"
+      SEED_REVIEWS: "50000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  # ── Apollo Router ─────────────────────────────────────────────────────────
   router-init:
     image: alpine:latest
     user: root
@@ -33,22 +64,44 @@ services:
       - router-init
       - redis
       - tempo
+
+  # ── Subgraphs ─────────────────────────────────────────────────────────────
   accounts:
     build: ./starstuff-services/accounts
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/starstuff
     ports:
       - 4001:4001
+    depends_on:
+      seeder:
+        condition: service_completed_successfully
   inventory:
     build: ./starstuff-services/inventory
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/starstuff
     ports:
       - 4004:4004
+    depends_on:
+      seeder:
+        condition: service_completed_successfully
   products:
     build: ./starstuff-services/products
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/starstuff
     ports:
       - 4003:4003
+    depends_on:
+      seeder:
+        condition: service_completed_successfully
   reviews:
     build: ./starstuff-services/reviews
+    environment:
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/starstuff
     ports:
       - 4002:4002
+    depends_on:
+      seeder:
+        condition: service_completed_successfully
   subgraphs:
     image: alpine:latest
     entrypoint:
@@ -176,3 +229,4 @@ volumes:
   tempo-data:
   loki-data:
   router-logs:
+  postgres-data:
