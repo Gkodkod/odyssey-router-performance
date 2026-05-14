@@ -28,3 +28,19 @@
 ### Constraints
 - The multi-user Vegeta load test query is still undefined and requires research.
 - Need to research potential issues with blanket DataLoader implementation obscuring specific performance deltas.
+
+## Phase 6 Decisions
+
+**Date:** 2026-05-14
+
+### Scope
+- Stress test the router's query planner, cache, and DataLoader boundaries using heavy queries and cross-subgraph mutations.
+- Isolate query performance from mutation performance using segmented load testing.
+- Visualize the segmented metrics explicitly in Grafana.
+
+### Approach
+- Chose: Segmented target load tests (separated query and mutation payloads) along with new dashboard panels.
+- Reason: To ensure clear observability of how mutations affect caching and latency independently from read-heavy traffic.
+
+### Constraints
+- Mutations need to handle DB constraints gracefully (e.g. `ON CONFLICT DO NOTHING`) to allow high RPS stress testing without bloat.

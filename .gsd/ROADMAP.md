@@ -49,6 +49,15 @@
 ---
 
 ### Phase 5: DataLoader Consistency & Technical Debt
-**Status**: 🔄 In Progress
+**Status**: ✅ Complete
 **Objective**: Address known technical debt: extend DataLoader batching to other subgraphs where needed, fix the hardcoded `me()` query in `accounts`, and add a multi-user query to Vegeta config to fully exercise batch loading.
 **Requirements**: SPEC — Technical Debt items from ARCHITECTURE.md
+**Completed**: 2026-05-14
+
+---
+
+### Phase 6: Advanced Stress Testing
+**Status**: ⬜ Not Started
+**Objective**: Introduce deeply nested queries, heavy computation queries (with `@requires`), and cross-subgraph mutations to thoroughly stress-test the router's query planner, cache limits, and DataLoader configurations.
+**Requirements**: SPEC — Goal 4 (Load Testing & Measurement)
+
