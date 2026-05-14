@@ -14,33 +14,46 @@ This document outlines specific, actionable steps to further optimize the Odysse
     cd starstuff-services/reviews
     npm install dataloader
     ```
-2.  Update the server initialization to provide DataLoaders via the GraphQL Context:
-    ```javascript
-    const DataLoader = require('dataloader');
-    
-    // Create batch functions
-    const batchReviewsForUsers = async (userIds) => {
-      // In a real app, this is a single SQL query: SELECT * FROM reviews WHERE authorID IN (userIds)
-      return userIds.map(id => reviews.filter(review => review.authorID === id));
-    };
+2.  Update `starstuff-services/reviews/index.js` with the following:
+    *   **Import DataLoader** (at the top):
+        ```javascript
+        const DataLoader = require('dataloader');
+        ```
+    *   **Define the Batch Function** (after the `reviews` data array):
+        ```javascript
+        const batchReviewsForUsers = async (userIds) => {
+          console.log('Loader called with userIds:', userIds);
+          return userIds.map(id => reviews.filter(review => review.authorID === id));
+        };
+        ```
+    *   **Update the Resolver** (inside the `resolvers` object):
+        ```javascript
+        User: {
+          reviews(user, args, context) {
+            return context.userReviewsLoader.load(user.id);
+          }
+        }
+        ```
+    *   **Provide the Loader via Context** (inside `expressMiddleware` near the bottom):
+        ```javascript
+        expressMiddleware(server, {
+          context: async () => ({
+            userReviewsLoader: new DataLoader(batchReviewsForUsers)
+          })
+        })
+        ```
 
-    // Update ApolloServer startup to include context
-    app.use("/", cors(), json(), expressMiddleware(server, {
-      context: async () => ({
-        userReviewsLoader: new DataLoader(batchReviewsForUsers)
-      })
-    }));
+**Verification:** 
+1.  **Restart the service:** Since you are running in Docker, you must rebuild the image to apply the code changes:
+    ```bash
+    docker compose up -d --build reviews
     ```
-3.  Update the `User.reviews` resolver to use the loader:
-    ```javascript
-    User: {
-      reviews(user, args, context) {
-        return context.userReviewsLoader.load(user.id);
-      }
-    }
+2.  **Check Logs:** Monitor the logs to see the loader in action:
+    ```bash
+    docker compose logs -f reviews
     ```
-
-**Verification:** Add logging inside `batchReviewsForUsers`. You should see it called only *once* per request, even if the query asks for reviews of 50 different users.
+3.  **Run a Query:** Fetch multiple users and their reviews via the Apollo Sandbox. You should see the `Loader called with userIds:` log in your terminal only *once* per request, even if the query asks for reviews of 50 different users.
+4.  **Observe Grafana:** You can continue monitoring your dashboards at `http://localhost:3000`. You should notice a decrease in total subgraph request counts if you previously had N+1 issues.
 
 ---
 
