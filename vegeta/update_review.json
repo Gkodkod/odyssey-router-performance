@@ -1,0 +1,1 @@
+{"query": "mutation { updateReview(id: \"stress-1\", body: \"updated test review\") { id body } }"}

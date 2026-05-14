@@ -1,0 +1,1 @@
+{"query": "mutation { deleteReview(id: \"stress-1\") { id } }"}

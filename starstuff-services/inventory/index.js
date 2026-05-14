@@ -37,6 +37,10 @@ const typeDefs = parse(`#graphql
     @link(url: "https://specs.apollo.dev/federation/v2.3"
           import: ["@key" "@external" "@requires"])
 
+  type Mutation {
+    updateProductStock(upc: ID!, inStock: Boolean): Product
+  }
+
   type Product @key(fields: "upc") {
     upc: String!
     weight: Int @external
@@ -59,6 +63,15 @@ const resolvers = {
       if (object.price > 1000) return 0;
       return Math.floor(object.weight * 0.5);
     },
+  },
+  Mutation: {
+    async updateProductStock(_p, { upc, inStock }) {
+      await pool.query(
+        "UPDATE inventory SET in_stock = $1 WHERE upc = $2",
+        [inStock, upc]
+      );
+      return { upc, inStock };
+    }
   },
 };
 

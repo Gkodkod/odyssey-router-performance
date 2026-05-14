@@ -2,3 +2,18 @@ POST http://router:4000/
 Accept: application/json
 Content-type: application/json
 @/etc/vegeta/mutation_cross.json
+
+POST http://router:4000/
+Accept: application/json
+Content-type: application/json
+@/etc/vegeta/update_review.json
+
+POST http://router:4000/
+Accept: application/json
+Content-type: application/json
+@/etc/vegeta/delete_review.json
+
+POST http://router:4000/
+Accept: application/json
+Content-type: application/json
+@/etc/vegeta/update_stock.json

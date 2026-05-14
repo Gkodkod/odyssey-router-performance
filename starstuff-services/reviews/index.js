@@ -45,6 +45,8 @@ const typeDefs = parse(`#graphql
 
   type Mutation {
     createReview(upc: ID!, id: ID!, authorId: ID!, body: String): Review
+    updateReview(id: ID!, body: String): Review
+    deleteReview(id: ID!): Review
   }
 
   type Review @key(fields: "id") {
@@ -107,6 +109,34 @@ const resolvers = {
         body: args.body,
         product: { upc: args.upc },
         author: { __typename: "User", id: args.authorId },
+      };
+    },
+    async updateReview(_p, { id, body }) {
+      const result = await pool.query(
+        "UPDATE reviews SET body = $1 WHERE id = $2 RETURNING *",
+        [body, id]
+      );
+      if (result.rows.length === 0) return null;
+      const row = result.rows[0];
+      return {
+        id: row.id,
+        body: row.body,
+        product: { upc: row.product_upc },
+        author: { __typename: "User", id: row.author_id },
+      };
+    },
+    async deleteReview(_p, { id }) {
+      const result = await pool.query(
+        "DELETE FROM reviews WHERE id = $1 RETURNING *",
+        [id]
+      );
+      if (result.rows.length === 0) return null;
+      const row = result.rows[0];
+      return {
+        id: row.id,
+        body: row.body,
+        product: { upc: row.product_upc },
+        author: { __typename: "User", id: row.author_id },
       };
     },
   },
