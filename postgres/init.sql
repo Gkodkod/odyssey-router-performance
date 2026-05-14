@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
   birth_date  TEXT
 );
 
+
 CREATE TABLE IF NOT EXISTS products (
   upc     TEXT PRIMARY KEY,
   name    TEXT NOT NULL,

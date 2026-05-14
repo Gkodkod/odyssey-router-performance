@@ -10,6 +10,7 @@ const cors = require("cors");
 const { parse } = require("graphql");
 const { Pool } = require("pg");
 
+
 // ─── Database Pool ────────────────────────────────────────────────────────────
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || "postgresql://postgres:password@localhost:5432/starstuff",

@@ -51,7 +51,7 @@ async function bulkInsert(client, table, columns, rows) {
   }
 }
 
-// ─── Seed functions ──────────────────────────────────────────────────────────
+// ─── Seed functions ──────────────────────────────────────────────────────────_
 
 async function seedUsers(client) {
   console.log(`  Generating ${USER_COUNT.toLocaleString()} users...`);

@@ -10,3 +10,5 @@ package-lock.json*
 .agents/
 adapters/
 docs/
+gsd-template/
+gsd-template

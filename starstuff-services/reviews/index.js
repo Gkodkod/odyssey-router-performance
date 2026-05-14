@@ -16,7 +16,7 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL || "postgresql://postgres:password@localhost:5432/starstuff",
 });
 
-// ─── DataLoader batch functions ───────────────────────────────────────────────
+// ─── DataLoader batch functions ───────────────────────────────────────────────-
 const batchReviewsByAuthorId = async (authorIds) => {
   console.log(`Loader called with ${authorIds.length} userIds:`, authorIds);
   const result = await pool.query(

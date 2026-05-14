@@ -39,7 +39,7 @@ const typeDefs = parse(`#graphql
   }
 `);
 
-// ─── Resolvers ────────────────────────────────────────────────────────────────
+// ─── Resolvers ────────────────────────────────────────────────────────────────-
 const resolvers = {
   Product: {
     async __resolveReference(object, _, info) {

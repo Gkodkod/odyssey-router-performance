@@ -55,7 +55,7 @@ const resolvers = {
   },
 };
 
-// ─── Server startup ───────────────────────────────────────────────────────────
+// ─── Server startup ───────────────────────────────────────────────────────────-
 async function startApolloServer(typeDefs, resolvers) {
   const app = express();
 

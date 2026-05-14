@@ -1,6 +1,6 @@
 name: performance-workshop
 services:
-  # ── PostgreSQL ────────────────────────────────────────────────────────────
+  # ── PostgreSQL ────────────────────────────────────────────────────────────_
   postgres:
     image: postgres:16-alpine
     environment:
