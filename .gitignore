@@ -12,3 +12,8 @@ adapters/
 docs/
 gsd-template/
 gsd-template
+
+# GSD session state
+.gsd/STATE.md
+.gsd/JOURNAL.md
+.gsd/TODO.md

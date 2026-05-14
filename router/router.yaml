@@ -21,7 +21,7 @@ traffic_shaping:
       deduplicate_query: true
 
 supergraph:
-  introspection: true
+  introspection: ${env.ENABLE_INTROSPECTION:-true}
   listen: 0.0.0.0:4000
   query_planning:
     cache:
@@ -29,6 +29,12 @@ supergraph:
         limit: 512 # This is the default value.
     # Pre-plan the 100 most used operations when the supergraph changes
     warmed_up_queries: 100
+
+apq:
+  router:
+    cache:
+      in_memory:
+        limit: 512
 
 preview_entity_cache:
   enabled: true
@@ -50,7 +56,7 @@ preview_entity_cache:
       enabled: true
 
 sandbox:
-  enabled: true
+  enabled: ${env.ENABLE_INTROSPECTION:-true}
 homepage:
   enabled: false
 
