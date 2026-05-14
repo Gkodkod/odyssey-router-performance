@@ -235,6 +235,19 @@ docker compose logs -f reviews
 
 > **Note:** The current Vegeta load test uses the `me { ... }` query which resolves only **one** user per request, so batches will show single-item arrays `[ '1' ]`. To fully demonstrate batching, run a query that resolves multiple users simultaneously (e.g., a query that fetches `topProducts { reviews { author { ... } } }`).
 
+### 8. Segmented Load Testing & Advanced Stress Testing (Phases 5 & 6)
+
+During Phases 5 and 6 of our optimizations, we introduced **Segmented Load Testing** using [Vegeta](https://github.com/tsenart/vegeta) to better observe performance boundaries. 
+
+**What is RPS?**
+RPS stands for **Requests Per Second**. It dictates exactly how much simulated traffic is hitting the Apollo Router.
+
+We split the load testing into two separate background containers to simulate a realistic production workload (the "80/20 rule"):
+1. **`vegeta-queries` (800 RPS):** This container fires a high volume of read-only queries (including newly added deeply nested queries and heavy computations). We run queries at a massive 800 RPS because the Apollo Router is capable of caching and deduplicating reads, and the underlying Subgraph DataLoaders efficiently batch the database lookups.
+2. **`vegeta-mutations` (200 RPS):** This container exclusively fires cache-invalidating mutations (e.g., `createProduct`, `updateReview`, `updateProductStock`). We run mutations at a much lower 200 RPS because mutations are "expensive." They bypass the Router's cache entirely and force the PostgreSQL database to execute hard disk writes (`INSERT`, `UPDATE`). Trying to execute 800 hard database writes per second locally would quickly overwhelm the Docker container's I/O and cause cascading 500-level errors.
+
+By separating them into two containers and visualizing them in Grafana, you can easily see the latency and throughput differences between optimized reads and raw writes.
+
 ## Getting help
 
 This repo is _not regularly monitored_.
