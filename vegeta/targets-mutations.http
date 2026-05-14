@@ -17,3 +17,14 @@ POST http://router:4000/
 Accept: application/json
 Content-type: application/json
 @/etc/vegeta/update_stock.json
+
+POST http://router:4000/
+Accept: application/json
+Content-type: application/json
+@/etc/vegeta/create_product.json
+
+
+POST http://router:4000/
+Accept: application/json
+Content-type: application/json
+@/etc/vegeta/create_product.json

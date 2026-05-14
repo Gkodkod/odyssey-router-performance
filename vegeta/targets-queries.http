@@ -178,3 +178,13 @@ POST http://router:4000/
 Accept: application/json
 Content-type: application/json
 @/etc/vegeta/multiuser.json
+
+POST http://router:4000/
+Accept: application/json
+Content-type: application/json
+@/etc/vegeta/deep_nested.json
+
+POST http://router:4000/
+Accept: application/json
+Content-type: application/json
+@/etc/vegeta/heavy_compute.json

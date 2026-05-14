@@ -1,0 +1,1 @@
+{"query": "mutation { createProduct(upc: \"product-123\", name: \"Stress Test Product\") { upc name } }"}
