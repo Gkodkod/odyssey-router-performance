@@ -1,0 +1,4 @@
+POST http://router:4000/
+Accept: application/json
+Content-type: application/json
+@/etc/vegeta/mutation_cross.json

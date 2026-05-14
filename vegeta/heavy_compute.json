@@ -1,0 +1,1 @@
+{"query": "query HeavyCompute { topProducts(first: 50) { name shippingEstimate inStock reviews { body } } }"}
