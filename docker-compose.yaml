@@ -231,14 +231,23 @@ services:
     depends_on:
       - redis
     restart: always
-  vegeta:
+  vegeta-queries:
     image: jauderho/vegeta
     depends_on:
       - router
     volumes:
       - ${PWD}/vegeta:/etc/vegeta
-    command: attack -targets=/etc/vegeta/targets.http -rate=800 -timeout 10s -duration=0 -output=/dev/null
-    # restart: always
+    command: attack -targets=/etc/vegeta/targets-queries.http -rate=800 -timeout 10s -duration=0 -output=/dev/null
+    restart: always
+
+  vegeta-mutations:
+    image: jauderho/vegeta
+    depends_on:
+      - router
+    volumes:
+      - ${PWD}/vegeta:/etc/vegeta
+    command: attack -targets=/etc/vegeta/targets-mutations.http -rate=200 -timeout 10s -duration=0 -output=/dev/null
+    restart: always
 
 volumes:
   tempo-data:
