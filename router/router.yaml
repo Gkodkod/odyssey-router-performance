@@ -36,24 +36,26 @@ apq:
       in_memory:
         limit: 512
 
-preview_entity_cache:
-  enabled: true
-  subgraph:
-    all:
-      enabled: false
-      redis:
-        urls: ["redis://redis:6379"]
-        timeout: 15ms # Optional, by default: 2ms
-        ttl: 10s # Optional, by default no expiration
-  subgraphs:
-    products:
-      enabled: true
-    inventory:
-      enabled: true
-    reviews:
-      enabled: true
-    accounts:
-      enabled: true
+# preview_entity_cache is disabled while testing DataLoader changes
+# Re-enable once router can reach Apollo uplink for license validation
+# preview_entity_cache:
+#   enabled: true
+#   subgraph:
+#     all:
+#       enabled: false
+#       redis:
+#         urls: ["redis://redis:6379"]
+#         timeout: 15ms # Optional, by default: 2ms
+#         ttl: 10s # Optional, by default no expiration
+#   subgraphs:
+#     products:
+#       enabled: true
+#     inventory:
+#       enabled: true
+#     reviews:
+#       enabled: true
+#     accounts:
+#       enabled: true
 
 sandbox:
   enabled: ${env.ENABLE_INTROSPECTION:-true}
@@ -63,6 +65,13 @@ homepage:
 cors:
   allow_any_origin: true
 
+
+headers:
+  subgraphs:
+    accounts:
+      request:
+        - propagate:
+            named: "x-user-id"
 
 include_subgraph_errors:
   all: true

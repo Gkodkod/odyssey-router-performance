@@ -172,3 +172,8 @@ POST http://localhost:4000/
 Accept: application/json
 Content-type: application/json
 @./vegeta/recommended9.json
+
+POST http://localhost:4000/
+Accept: application/json
+Content-type: application/json
+@./vegeta/multiuser.json

@@ -173,3 +173,8 @@ POST http://router:4000/
 Accept: application/json
 Content-type: application/json
 @/etc/vegeta/recommended9.json
+
+POST http://router:4000/
+Accept: application/json
+Content-type: application/json
+@/etc/vegeta/multiuser.json

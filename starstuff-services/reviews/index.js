@@ -44,7 +44,7 @@ const typeDefs = parse(`#graphql
           import: ["@key" "@external" "@provides"])
 
   type Mutation {
-    createReview(upc: ID!, id: ID!, body: String): Review
+    createReview(upc: ID!, id: ID!, authorId: ID!, body: String): Review
   }
 
   type Review @key(fields: "id") {
@@ -100,9 +100,14 @@ const resolvers = {
       const id = args.id || `review-${Date.now()}`;
       await pool.query(
         "INSERT INTO reviews (id, author_id, product_upc, body) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING",
-        [id, null, args.upc, args.body]
+        [id, args.authorId, args.upc, args.body]
       );
-      return { id, body: args.body, product: { upc: args.upc } };
+      return {
+        id,
+        body: args.body,
+        product: { upc: args.upc },
+        author: { __typename: "User", id: args.authorId },
+      };
     },
   },
 };

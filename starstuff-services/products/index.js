@@ -9,6 +9,7 @@ const { json } = require("body-parser");
 const cors = require("cors");
 const { parse } = require("graphql");
 const { Pool } = require("pg");
+const DataLoader = require("dataloader");
 
 // ─── Database Pool ────────────────────────────────────────────────────────────
 const pool = new Pool({
@@ -16,6 +17,16 @@ const pool = new Pool({
 });
 
 const rateLimitTreshold = process.env.LIMIT || 5000;
+
+// ─── DataLoader batch function ────────────────────────────────────────────────
+const batchProductsByUpc = async (upcs) => {
+  console.log(`[products] Loader called with ${upcs.length} upcs:`, upcs);
+  const result = await pool.query(
+    "SELECT * FROM products WHERE upc = ANY($1::text[])",
+    [upcs]
+  );
+  return upcs.map(upc => result.rows.find(r => r.upc === upc) || null);
+};
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 const typeDefs = parse(`#graphql
@@ -42,13 +53,9 @@ const typeDefs = parse(`#graphql
 // ─── Resolvers ────────────────────────────────────────────────────────────────-
 const resolvers = {
   Product: {
-    async __resolveReference(object, _, info) {
+    async __resolveReference(object, context, info) {
       info.cacheControl.setCacheHint({ maxAge: 60 });
-      const result = await pool.query(
-        "SELECT * FROM products WHERE upc = $1",
-        [object.upc]
-      );
-      return result.rows[0] || null;
+      return context.productLoader.load(object.upc);
     },
   },
   Query: {
@@ -101,7 +108,11 @@ async function startApolloServer(typeDefs, resolvers) {
     (req, res, next) => {
       setTimeout(next, Math.floor(Math.random() * 20 + 30));
     },
-    expressMiddleware(server)
+    expressMiddleware(server, {
+      context: async () => ({
+        productLoader: new DataLoader(batchProductsByUpc),
+      }),
+    })
   );
 
   const port = process.env.PORT || 4003;

@@ -9,6 +9,7 @@ const { json } = require("body-parser");
 const cors = require("cors");
 const { parse } = require("graphql");
 const { Pool } = require("pg");
+const DataLoader = require("dataloader");
 
 // ─── Database Pool ────────────────────────────────────────────────────────────
 const pool = new Pool({
@@ -16,6 +17,19 @@ const pool = new Pool({
 });
 
 const rateLimitTreshold = process.env.LIMIT || 5000;
+
+// ─── DataLoader batch function ────────────────────────────────────────────────
+const batchInventoryByUpc = async (upcs) => {
+  console.log(`[inventory] Loader called with ${upcs.length} upcs:`, upcs);
+  const result = await pool.query(
+    "SELECT upc, in_stock FROM inventory WHERE upc = ANY($1::text[])",
+    [upcs]
+  );
+  return upcs.map(upc => {
+    const row = result.rows.find(r => r.upc === upc);
+    return row ? { upc, inStock: row.in_stock } : { upc, inStock: false };
+  });
+};
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 const typeDefs = parse(`#graphql
@@ -35,17 +49,10 @@ const typeDefs = parse(`#graphql
 // ─── Resolvers ────────────────────────────────────────────────────────────────
 const resolvers = {
   Product: {
-    async __resolveReference(object, _, info) {
+    async __resolveReference(object, context, info) {
       info.cacheControl.setCacheHint({ maxAge: 60 });
-      const result = await pool.query(
-        "SELECT upc, in_stock FROM inventory WHERE upc = $1",
-        [object.upc]
-      );
-      const row = result.rows[0];
-      return {
-        ...object,
-        inStock: row ? row.in_stock : false,
-      };
+      const inv = await context.inventoryLoader.load(object.upc);
+      return { ...object, inStock: inv.inStock };
     },
     shippingEstimate(object) {
       // Free shipping for expensive items; otherwise based on weight
@@ -83,7 +90,11 @@ async function startApolloServer(typeDefs, resolvers) {
     (req, res, next) => {
       setTimeout(next, Math.floor(Math.random() * 10 + 50));
     },
-    expressMiddleware(server)
+    expressMiddleware(server, {
+      context: async () => ({
+        inventoryLoader: new DataLoader(batchInventoryByUpc),
+      }),
+    })
   );
 
   const port = process.env.PORT || 4004;

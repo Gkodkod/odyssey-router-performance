@@ -9,6 +9,7 @@ const { json } = require("body-parser");
 const cors = require("cors");
 const { parse } = require("graphql");
 const { Pool } = require("pg");
+const DataLoader = require("dataloader");
 
 
 // ─── Database Pool ────────────────────────────────────────────────────────────
@@ -17,6 +18,16 @@ const pool = new Pool({
 });
 
 const rateLimitTreshold = process.env.LIMIT || 5000;
+
+// ─── DataLoader batch function ────────────────────────────────────────────────
+const batchUsersById = async (ids) => {
+  console.log(`[accounts] Loader called with ${ids.length} userIds:`, ids);
+  const result = await pool.query(
+    "SELECT * FROM users WHERE id = ANY($1::text[])",
+    [ids]
+  );
+  return ids.map(id => result.rows.find(r => r.id === id) || null);
+};
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 const typeDefs = parse(`#graphql
@@ -43,26 +54,25 @@ const typeDefs = parse(`#graphql
 // ─── Resolvers ────────────────────────────────────────────────────────────────
 const resolvers = {
   Query: {
-    async me(parent, args, contextValue, info) {
+    async me(parent, args, context, info) {
       info.cacheControl.setCacheHint({ maxAge: 60, scope: "PRIVATE" });
-      // Always return the first user (fixture: Ada Lovelace)
-      const result = await pool.query("SELECT * FROM users WHERE id = $1", ["1"]);
-      return result.rows[0] || null;
+      // Read x-user-id header forwarded by Router; fallback to '1' for local dev
+      const userId = context.userId || '1';
+      return context.userLoader.load(userId);
     },
     async recommendedProducts(parent, args, contextValue, info) {
       info.cacheControl.setCacheHint({ maxAge: 10, scope: "PRIVATE" });
-      // Return 2 random products from the pool
+      // Return 20 random products from the pool
       const result = await pool.query(
-        "SELECT upc FROM products ORDER BY RANDOM() LIMIT 2"
+        "SELECT upc FROM products ORDER BY RANDOM() LIMIT 20"
       );
       return result.rows.map((r) => ({ upc: r.upc }));
     },
   },
   User: {
-    async __resolveReference(object, _, info) {
+    async __resolveReference(object, context, info) {
       info.cacheControl.setCacheHint({ maxAge: 60 });
-      const result = await pool.query("SELECT * FROM users WHERE id = $1", [object.id]);
-      return result.rows[0] || null;
+      return context.userLoader.load(object.id);
     },
   },
 };
@@ -95,7 +105,13 @@ async function startApolloServer(typeDefs, resolvers) {
     (req, res, next) => {
       setTimeout(next, Math.floor(Math.random() * 10 + 40));
     },
-    expressMiddleware(server)
+    expressMiddleware(server, {
+      // Fresh DataLoader + userId per request
+      context: async ({ req }) => ({
+        userId: req.headers['x-user-id'] || '1',
+        userLoader: new DataLoader(batchUsersById),
+      }),
+    })
   );
 
   const port = process.env.PORT || 4001;
