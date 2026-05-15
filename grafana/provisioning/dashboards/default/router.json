@@ -315,7 +315,28 @@
           },
           "unit": "s"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": { "id": "byFrameRefID", "options": "A" },
+            "properties": [ { "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } } ]
+          },
+          {
+            "matcher": { "id": "byFrameRefID", "options": "B" },
+            "properties": [ { "id": "color", "value": { "fixedColor": "#FADE2A", "mode": "fixed" } } ]
+          },
+          {
+            "matcher": { "id": "byFrameRefID", "options": "C" },
+            "properties": [ { "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } } ]
+          },
+          {
+            "matcher": { "id": "byFrameRefID", "options": "D" },
+            "properties": [ { "id": "color", "value": { "fixedColor": "#FF780A", "mode": "fixed" } } ]
+          },
+          {
+            "matcher": { "id": "byFrameRefID", "options": "E" },
+            "properties": [ { "id": "color", "value": { "fixedColor": "#E02F44", "mode": "fixed" } } ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -486,7 +507,28 @@
           },
           "unit": "s"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": { "id": "byFrameRefID", "options": "E" },
+            "properties": [ { "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } } ]
+          },
+          {
+            "matcher": { "id": "byFrameRefID", "options": "D" },
+            "properties": [ { "id": "color", "value": { "fixedColor": "#FADE2A", "mode": "fixed" } } ]
+          },
+          {
+            "matcher": { "id": "byFrameRefID", "options": "C" },
+            "properties": [ { "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } } ]
+          },
+          {
+            "matcher": { "id": "byFrameRefID", "options": "B" },
+            "properties": [ { "id": "color", "value": { "fixedColor": "#FF780A", "mode": "fixed" } } ]
+          },
+          {
+            "matcher": { "id": "byFrameRefID", "options": "A" },
+            "properties": [ { "id": "color", "value": { "fixedColor": "#E02F44", "mode": "fixed" } } ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,

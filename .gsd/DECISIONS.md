@@ -12,6 +12,7 @@
 | ADR-004 | Single shared PostgreSQL instance across all subgraphs | Simplifies local dev setup; acceptable for a workshop environment (not a multi-DB microservice pattern) | 2026-05-14 | Accepted |
 | ADR-005 | DataLoader Implementation Strategy | Option B: Implement DataLoaders everywhere a database/API call is made inside a resolver across all remaining subgraphs to ensure blanket protection against N+1 queries. | 2026-05-14 | Accepted |
 | ADR-006 | Accounts Subgraph Authentication Context | Pass authentication headers via Apollo Router to the subgraphs to resolve the hardcoded `me()` query and dynamically determine user context. | 2026-05-14 | Accepted |
+| ADR-007 | Semantic Panel Color Palette | Implement a semantic heat progression for Grafana latency percentiles (p50: Green, p75: Yellow, p90: Orange, p95: Dark Orange, p99: Red) using `fieldConfig.overrides` rather than automatic palettes. | 2026-05-14 | Accepted |
 
 ## Phase 5 Decisions
 
@@ -44,3 +45,17 @@
 
 ### Constraints
 - Mutations need to handle DB constraints gracefully (e.g. `ON CONFLICT DO NOTHING`) to allow high RPS stress testing without bloat.
+
+## Phase 2 (New Milestone) Decisions
+
+**Date:** 2026-05-14
+
+### Scope
+- Discuss and finalize semantic metric colors for the processing panel.
+
+### Approach
+- Chose: Semantic Heat Progression (p50: #73BF69, p75: #FADE2A, p90: #FF9830, p95: #FF780A, p99: #E02F44)
+- Reason: p99 spikes should visually alert the operator as an outlier (red/orange) rather than blending in as healthy (green) which happens under `palette-classic`.
+
+### Constraints
+- Must use `fieldConfig.overrides` in `router.json` explicitly matched by name.
