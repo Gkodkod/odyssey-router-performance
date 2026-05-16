@@ -26,7 +26,7 @@ supergraph:
   query_planning:
     cache:
       in_memory:
-        limit: 512 # This is the default value.
+        limit: 10000 # Increased to handle large unique operation sets
     # Pre-plan the 100 most used operations when the supergraph changes
     warmed_up_queries: 100
 

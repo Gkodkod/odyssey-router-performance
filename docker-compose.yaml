@@ -240,13 +240,23 @@ services:
     command: attack -targets=/etc/vegeta/targets-queries.http -rate=800 -timeout 10s -duration=0 -output=/dev/null
     restart: always
 
+  target-generator:
+    image: node:20-slim
+    volumes:
+      - ${PWD}/vegeta:/app/vegeta
+    working_dir: /app
+    command: node vegeta/generate_targets.js
+
   vegeta-mutations:
     image: jauderho/vegeta
     depends_on:
-      - router
+      target-generator:
+        condition: service_completed_successfully
+      router:
+        condition: service_started
     volumes:
       - ${PWD}/vegeta:/etc/vegeta
-    command: attack -targets=/etc/vegeta/targets-mutations.http -rate=200 -timeout 10s -duration=0 -output=/dev/null
+    command: attack -format=json -targets=/etc/vegeta/targets-dynamic.http -rate=200 -timeout 10s -duration=0 -output=/dev/null
     restart: always
 
 volumes:
